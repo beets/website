@@ -64,6 +64,8 @@ def build_url(dcid, stats_vars):
     anchor = '&place={}&statsVar={}'.format(dcid, '__'.join(stats_vars))
     return urllib.parse.unquote(url_for('tools.timeline', _anchor=anchor))
 
+import logging
+#import os
 
 def get_statsvars_need_all_dates(chart_list):
     """Pulls out stats vars from the list of chart configs that require all dates kept
@@ -111,11 +113,17 @@ def get_landing_page_data(dcid):
 
 
 @bp.route('/config/<path:dcid>')
-@cache.memoize(timeout=3600 * 24)  # Cache for one day.
+#@cache.memoize(timeout=3600 * 24)  # Cache for one day.
 def config(dcid):
     """
     Get chart config for a given place.
     """
+
+    logging.debug(bp.root_path)
+    with bp.open_resource('../../chart_config.json') as f:
+        chart_config = json.load(f)
+    current_app.config['CHART_CONFIG'] = chart_config
+
     all_stats_vars = set(place_api.statsvars(dcid))
 
     # Build the chart config by filtering the source configuration based on
