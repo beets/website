@@ -38,7 +38,8 @@ bp = Blueprint("api_chart", __name__, url_prefix='/api/chart')
 # this works for US places, but hierarchy of places in other countries may be different
 CHOROPLETH_DISPLAY_LEVEL_MAP = {
     "Country": "AdministrativeArea1",
-    "AdministrativeArea1": "AdministrativeArea2"
+    "AdministrativeArea1": "AdministrativeArea2",
+    "AdministrativeArea2": "AdministrativeArea2"
 }
 # GeoJSON property to use, keyed by display level.
 CHOROPLETH_GEOJSON_PROPERTY_MAP = {
@@ -68,10 +69,32 @@ def get_choropleth_places(geoDcid):
         display_level = CHOROPLETH_DISPLAY_LEVEL_MAP[place_type]
     else:
         return place_list
-    place_list = dc_service.get_places_in([geoDcid],
-                                          display_level).get(geoDcid, [])
-    geo_prop = CHOROPLETH_GEOJSON_PROPERTY_MAP[display_level]
-    return place_list, geo_prop
+
+    if place_type == display_level:
+        parents_places = place_api.parent_places(geoDcid)
+        for parent in parents_places.get(geoDcid, []):
+            parent_dcid = parent.get('dcid', None)
+            if not parent_dcid:
+                continue
+            parent_place_types = parent.get('types', [])
+            for parent_place_type in parent_place_types:
+                parent_display_level = CHOROPLETH_DISPLAY_LEVEL_MAP.get(
+                    parent_place_type, None)
+                if not parent_display_level:
+                    parent_display_level = CHOROPLETH_DISPLAY_LEVEL_MAP.get(
+                        EQUIVALENT_PLACE_TYPES.get(parent_place_type, ''))
+                if parent_display_level == display_level:
+                    place_list = dc_service.get_places_in([parent_dcid],
+                                                          display_level).get(
+                                                              parent_dcid, [])
+                    geo_prop = CHOROPLETH_GEOJSON_PROPERTY_MAP[display_level]
+                    return place_list, geo_prop
+        return place_list
+    else:
+        place_list = dc_service.get_places_in([geoDcid],
+                                              display_level).get(geoDcid, [])
+        geo_prop = CHOROPLETH_GEOJSON_PROPERTY_MAP[display_level]
+        return place_list, geo_prop
 
 
 @bp.route('/geojson/<path:dcid>')
@@ -203,7 +226,7 @@ def choropleth_data(dcid):
     for cc in choropleth_configs:
         # we should only be making choropleths for configs with a single stat var
         sv = cc['statsVars'][0]
-        cc_data = landing_page_api.get_snapshot_across_places(
+        cc_data, statvar_denom = landing_page_api.get_snapshot_across_places(
             cc, processed_data, geos)
         data_values = cc_data.get('data', [])
         data_dict = dict()
@@ -220,7 +243,8 @@ def choropleth_data(dcid):
         is_scaled = (('relatedChart' in cc and
                       cc['relatedChart'].get('scale', False)) or
                      ('denominator' in cc))
-        exploreUrl = landing_page_api.build_url([dcid], [sv], is_scaled)
+        exploreUrl = landing_page_api.build_url([dcid], statvar_denom,
+                                                is_scaled)
         cc_result = {
             'date': cc_data.get('date', None),
             'data': data_dict,
