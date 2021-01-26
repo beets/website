@@ -17,6 +17,7 @@ import unittest
 from unittest.mock import patch
 
 from main import app
+from services import datacommons as dc
 
 
 class TestRoute(unittest.TestCase):
