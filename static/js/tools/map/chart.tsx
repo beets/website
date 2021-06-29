@@ -80,8 +80,8 @@ export function Chart(props: ChartProps): JSX.Element {
         const width = chartContainer.offsetWidth;
         if (width !== chartWidth) {
           setChartWidth(width);
-          draw(props, setErrorMessage, false);
         }
+        draw(props, setErrorMessage, false);
       }
     }
     window.addEventListener("resize", _handleWindowResize);
@@ -99,21 +99,21 @@ export function Chart(props: ChartProps): JSX.Element {
           {errorMessage ? (
             <div className="error-message">{errorMessage}</div>
           ) : (
-            <div className="map-section-container">
-              <div id={CHART_CONTAINER_ID}>
-                <div id={MAP_CONTAINER_ID}></div>
-                <div id={LEGEND_CONTAINER_ID}></div>
-              </div>
-              <div className="zoom-button-section">
-                <div id={ZOOM_IN_BUTTON_ID} className="zoom-button">
-                  <i className="material-icons">add</i>
+              <div className="map-section-container">
+                <div id={CHART_CONTAINER_ID}>
+                  <div id={MAP_CONTAINER_ID}></div>
+                  <div id={LEGEND_CONTAINER_ID}></div>
                 </div>
-                <div id={ZOOM_OUT_BUTTON_ID} className="zoom-button">
-                  <i className="material-icons">remove</i>
+                <div className="zoom-button-section">
+                  <div id={ZOOM_IN_BUTTON_ID} className="zoom-button">
+                    <i className="material-icons">add</i>
+                  </div>
+                  <div id={ZOOM_OUT_BUTTON_ID} className="zoom-button">
+                    <i className="material-icons">remove</i>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
           <ChartOptions
             dataValues={props.breadcrumbDataValues}
             placeInfo={props.placeInfo}
@@ -142,8 +142,8 @@ function draw(
   shouldDrawMap: boolean
 ): void {
   document.getElementById(LEGEND_CONTAINER_ID).innerHTML = "";
-  const width = document.getElementById(CHART_CONTAINER_ID).offsetWidth;
-  const height = (width * 2) / 5;
+  const width = document.getElementById(MAP_CONTAINER_ID).offsetWidth;
+  const height = document.getElementById(MAP_CONTAINER_ID).offsetHeight;
   const redirectAction = getMapRedirectAction(props.statVar, props.placeInfo);
   const zoomDcid =
     props.placeInfo.enclosingPlace.dcid !== props.placeInfo.selectedPlace.dcid
