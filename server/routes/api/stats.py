@@ -201,6 +201,10 @@ def get_stat_set_within_place():
                         400,
                         mimetype='application/json')
     date = request.args.get("date")
+
+    if parent_place == "europe" and child_type == "IPCCPlace_50":
+        with open('routes/api/ipcc_europe.json', encoding='utf-8') as f:
+            return json.load(f)
     return Response(json.dumps(
         dc.get_stat_set_within_place(parent_place, child_type, stat_vars,
                                      date).get('data', {})),
