@@ -203,7 +203,9 @@ def get_stat_set_within_place():
     date = request.args.get("date")
 
     if parent_place == "europe" and child_type == "IPCCPlace_50":
-        with open('routes/api/ipcc_europe.json', encoding='utf-8') as f:
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>HELLO!!!!!!!!!!!!!!!!!")
+        with open('/Users/cyin/google/website/server/routes/api/ipcc_europe.json', encoding='utf-8') as f:
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>HELLO!!!!!!!!!!!!!!!!!")
             return json.load(f)
     return Response(json.dumps(
         dc.get_stat_set_within_place(parent_place, child_type, stat_vars,

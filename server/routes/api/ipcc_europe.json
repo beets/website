@@ -1,5 +1,4 @@
 {
-  "data": {
     "Max_Temperature_RCP45": {
       "stat": {
         "ipcc_50/-10.25_-138.75_PYF": {
@@ -140299,6 +140298,5 @@
           "unit": "Celsius"
         }
       }
-    }
   }
 }

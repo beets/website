@@ -235,7 +235,7 @@ function fetchData(
   const statVarDataUrl = `/api/stats/within-place?parent_place=${placeInfo.enclosingPlace.dcid}&child_type=${placeInfo.enclosedPlaceType}&stat_vars=${statVar.dcid}${dataDateParam}`;
   const statVarDataPromise: Promise<PlacePointStat> = axios
     .get(statVarDataUrl)
-    .then((resp) => resp.data[statVar.dcid]);
+    .then((resp) => { /*debugger;*/ return resp.data[statVar.dcid]});
   const breadcrumbDataPromise: Promise<PlacePointStat> = axios
     .post("/api/stats/set", {
       places: breadcrumbPlaceDcids,
@@ -283,6 +283,7 @@ function fetchData(
         mapPointValues,
         europeanCountries,
       ]) => {
+        // debugger;
         let statVarDataMetadata =
           mapStatVarData && mapStatVarData.metadata
             ? mapStatVarData.metadata
@@ -351,7 +352,7 @@ function getPlaceChartData(
   const sources = [];
   const statVarDate = statVarData.stat[placeDcid].date;
   const importName = statVarData.stat[placeDcid].metadata.importName;
-  const statVarSource = statVarData.metadata[importName].provenanceUrl;
+  const statVarSource = ''; //statVarData.metadata[importName].provenanceUrl;
   let value =
     statVarData.stat[placeDcid].value === undefined
       ? 0
