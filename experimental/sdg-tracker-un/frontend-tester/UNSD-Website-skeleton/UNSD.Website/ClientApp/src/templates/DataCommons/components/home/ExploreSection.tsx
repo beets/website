@@ -26,6 +26,8 @@ import {
 } from "./components";
 // @ts-ignore
 import { routePathConstants } from "../../../../../src/helper/Common/RoutePathConstants";
+import { useEffect, useRef, useState } from "react";
+import { Input } from "antd";
 
 const Container = styled(HomeSection)`
   background-image: url(./images/datacommons/explore-background.png);
@@ -85,8 +87,85 @@ const SearchBarContainer = styled(HomeSearchContainer)`
   }
 `;
 
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
 export const ExploreSection = () => {
+  const CHARACTER_INPUT_INTERVAL_MS = 45;
+  const NEXT_PROMPT_DELAY_MS = 5000;
+  const INITIAL_MISSION_ON_SCREEN_DELAY_MS = 2000;
+  const INITIAL_MISSION_FADE_IN_DELAY_MS = 1000;
+  const ANSWER_DELAY_MS = 2000;
+  const FADE_OUT_MS = 800;
+  const FADE_OUT_CLASS = "fade-out";
+  const HIDDEN_CLASS = "hidden";
+  const SLIDE_DOWN_CLASS = "slide-down";
+  const INVISIBLE_CLASS = "invisible";
+  const FADE_IN_CLASS = "fade-in";
+
+  // let inputIntervalTimer, nextInputTimer: ReturnType<typeof setTimeout>;
+  // let currentPromptIndex = 0;
+  // let prompt;
+  const inputIntervalTimer = useRef(null);
+  const nextInputTimer = useRef(null);
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [prompt, setPrompt] = useState("");
+  const inputEl = useRef(null);
+  const searchSequenceContainer = useRef(null);
+  // const defaultTextContainer = useRef();
+  const svgDiv = useRef(null);
+  // const promptDiv = useRef();
+  // const missionDiv = useRef();
+  const resultsElList = useRef();
+
+  const [isAnimationRunning, setIsAnimationRunning] = useState(true);
+  const [currentQuery, setCurrentQuery] = useState("");
+
+  const PROMPTS = [
+    {q: "foobar query 1", svg: "image1"},
+    {q: "foobar query 2", svg: "image1"},
+    {q: "foobar query 3", svg: "image1"}
+  ];
+
   const history = useHistory();
+  // useEffect(startSearchAnimation, []);
+  // debugger;
+  // useEffect(() => {
+  //   console.log("timeout");
+  //   const timeout = setTimeout(() => {
+  //     startNextPrompt();
+  //   }, INITIAL_MISSION_FADE_IN_DELAY_MS);
+
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   }
+  //   // startSearchAnimation();
+  // }, [currentPromptIndex]);
+  useInterval(() => {
+    setCurrentPromptIndex(currentPromptIndex + 1);
+    console.log("interval", currentPromptIndex, prompt, PROMPTS[currentPromptIndex]?.q);
+    // debugger;
+    // inputEl.current.value = PROMPTS[currentPromptIndex]?.q;
+    setCurrentQuery(PROMPTS[currentPromptIndex]?.q);
+    if (currentPromptIndex + 1 == PROMPTS.length) {
+      setIsAnimationRunning(false);
+      console.log("all done");
+    }
+  }, isAnimationRunning ? NEXT_PROMPT_DELAY_MS : null);
 
   return (
     <Container>
@@ -105,6 +184,21 @@ export const ExploreSection = () => {
             );
           }}
         />
+  <div id="search-animation-container" className="container">
+    {/* <div id="default-text">
+      <div className="content">
+        <h3 className="header">Data tells interesting stories</h3>
+        <h4 className="sub-header invisible" id="header-prompt">Ask a question like...</h4>
+        <h4 className="sub-header hidden" id="header-mission">Data Commons, an initiative from Google,<br />organizes the world’s publicly available data<br />and makes it more accessible and useful</h4>
+      </div>
+    </div> */}
+    <div id="search-sequence" ref={searchSequenceContainer} className="hidden">
+      <Input id="animation-search-input" ref={inputEl} placeholder="" autoComplete="off" type="text" className="pac-target-input search-input-text form-control" aria-invalid="false" value={currentQuery} readOnly></Input>
+      <div id="result-svg" ref={svgDiv}>
+        {/* <div className="result hidden" data-query="Which countries in Africa have had the greatest increase in electricity access?" style={{backgroundImage: `url('/images/home-answers/access-electricity.svg')`}}></div> */}
+      </div>
+    </div>
+  </div>
       </SearchBarContainer>
       <Description>
         Delve into SDG data and insights with precision - where your questions
@@ -112,4 +206,69 @@ export const ExploreSection = () => {
       </Description>
     </Container>
   );
+
+  function startNextPrompt() {
+    let inputLength = 0;
+    if (currentPromptIndex < PROMPTS.length) {
+      setPrompt(PROMPTS[currentPromptIndex].q);
+      console.log(currentPromptIndex, prompt, PROMPTS[currentPromptIndex]);
+    } else {
+      // End the animation
+      // setTimeout(() => {
+      //   defaultTextContainer.classList.remove(FADE_OUT_CLASS);
+      // }, FADE_OUT_MS);
+      searchSequenceContainer.current.classList.add(FADE_OUT_CLASS);
+      clearInterval(nextInputTimer.current);
+      nextInputTimer.current = undefined;
+      return;
+    }
+    // Fade out the previous query
+    if (currentPromptIndex == 0) {
+      // defaultTextContainer.classList.add(FADE_OUT_CLASS);
+      searchSequenceContainer.current.classList.remove(HIDDEN_CLASS);
+    } else {
+      // resultsElList.item(currentPromptIndex.current - 1).classList.add(FADE_OUT_CLASS);
+    }
+    setTimeout(() => {
+      if (currentPromptIndex == 0) {
+        // defaultTextContainer.classList.add(FADE_OUT_CLASS);
+        svgDiv.current.classList.remove(HIDDEN_CLASS);
+        // promptDiv.classList.add(HIDDEN_CLASS);
+        // missionDiv.classList.remove(HIDDEN_CLASS);
+      }
+      // prompt.classList.remove(HIDDEN_CLASS);
+      // prompt.classList.add(SLIDE_DOWN_CLASS);
+      if (currentPromptIndex > 0) {
+        // resultsElList.item(currentPromptIndex.current - 1).classList.add(HIDDEN_CLASS);
+      }
+      console.log("incrementing prompt index");
+      setCurrentPromptIndex(currentPromptIndex.current + 1);
+    }, ANSWER_DELAY_MS);
+
+    // inputIntervalTimer.current = setInterval(() => {
+    //   // Start typing animation
+    //   if (inputLength <= prompt.dataset.query.length) {
+    //     inputEl.value = prompt.dataset.query.substring(0, inputLength);
+    //     // Set scrollLeft so we always see the full input even on narrow screens
+    //     inputEl.scrollLeft = inputEl.scrollWidth;
+    //     inputLength++;
+    //   } else {
+    //     // Slide in the answer
+    //     clearInterval(inputIntervalTimer.current);
+    //   }
+    // }, CHARACTER_INPUT_INTERVAL_MS);
+  }
+
+  function startSearchAnimation() {
+    setTimeout(() => {
+      // promptDiv.classList.remove(INVISIBLE_CLASS);
+      // promptDiv.classList.add(FADE_IN_CLASS);
+      setTimeout(() => {
+        startNextPrompt();
+        nextInputTimer.current = setInterval(() => {
+          startNextPrompt();
+        }, NEXT_PROMPT_DELAY_MS);
+      }, INITIAL_MISSION_ON_SCREEN_DELAY_MS);
+    }, INITIAL_MISSION_FADE_IN_DELAY_MS);
+  }
 };
