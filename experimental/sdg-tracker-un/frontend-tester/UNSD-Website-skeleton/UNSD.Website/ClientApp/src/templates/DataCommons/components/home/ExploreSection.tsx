@@ -28,6 +28,7 @@ import {
 import { routePathConstants } from "../../../../../src/helper/Common/RoutePathConstants";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "antd";
+import { animation } from "polished";
 
 const Container = styled(HomeSection)`
   background-image: url(./images/datacommons/explore-background.png);
@@ -87,25 +88,34 @@ const SearchBarContainer = styled(HomeSearchContainer)`
   }
 `;
 
-const SearchAnimationContainer = styled(Container)`
+const SearchAnimationContainer = styled(HomeSearchContainer)`
+  height: auto;
+
+  input {
+    margin-bottom: 24px;
+    background: transparent !important;
+    color: white;
+    border: none;
+    border-bottom: 1px solid gray;
+    border-radius: 0px !important;
+  }
+
   #result-svg {
+    overflow: hidden;
     position: relative;
     height: 300px;
   }
   .search-svg {
     background: #fff;
-    border: 1px solid red;
     display: block;
-    // height: 300px;
-    // max-width: 100%;
     margin: 0 auto;
     position: absolute;
-      background-position: top center;
-      background-repeat: no-repeat;
-      background-size: auto 300px;
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: auto 300px;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
   }
   .hidden {
     display: none !important;
@@ -122,9 +132,22 @@ const SearchAnimationContainer = styled(Container)`
       transform: translateY(0px);
     }
   }
+  .fade-out {
+    animation: fade-out 800ms !important;
+    opacity: 0;
+  }
+
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 `;
 
-function useInterval(callback, delay) {
+function useInterval(callback, delay: number | null) {
   const savedCallback = useRef();
   useEffect(() => {
     savedCallback.current = callback;
@@ -161,15 +184,16 @@ export const ExploreSection = () => {
   const nextInputTimer = useRef(null);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [prompt, setPrompt] = useState("");
-  const inputEl = useRef(null);
+  const [animationState, setAnimationState] = useState('START');
+  const inputEl = useRef<HTMLInputElement>(null);
   const searchSequenceContainer = useRef<HTMLDivElement>(null);
   // const defaultTextContainer = useRef();
   const svgDiv = useRef<HTMLDivElement>(null);
   // const promptDiv = useRef();
   // const missionDiv = useRef();
-  const resultsElList = useRef();
+  // const resultsElList = useRef();
 
-  const [isAnimationRunning, setIsAnimationRunning] = useState(true);
+  // const [isAnimationRunning, setIsAnimationRunning] = useState(true);
   const [currentQuery, setCurrentQuery] = useState("");
 
   const PROMPTS = [
@@ -181,37 +205,55 @@ export const ExploreSection = () => {
     // {q: "Women in managerial positions in India", svg: ""},
   ];
 
-  const history = useHistory();
-  // useEffect(startSearchAnimation, []);
-  // debugger;
-  // useEffect(() => {
-  //   console.log("timeout");
-  //   const timeout = setTimeout(() => {
-  //     startNextPrompt();
-  //   }, INITIAL_MISSION_FADE_IN_DELAY_MS);
+  const ANIMATION_TIMING = {
+    'START': 0,
+    'CHAR_INPUT': 45,
+    'NEXT_PROMPT': 4000,
+    'DONE': null,
+  };
 
-  //   return () => {
-  //     clearTimeout(timeout);
-  //   }
-  //   // startSearchAnimation();
-  // }, [currentPromptIndex]);
+  const history = useHistory();
+
+  // Search animation sequence
   useInterval(() => {
-    console.log("interval", currentPromptIndex, prompt, PROMPTS[currentPromptIndex]?.q);
-    // debugger;
-    // inputEl.current.value = PROMPTS[currentPromptIndex]?.q;
-    setCurrentQuery(PROMPTS[currentPromptIndex]?.q);
-    if (svgDiv.current) {
-      // Switch animated image.
-      let svgEl = svgDiv.current.childNodes.item(currentPromptIndex) as HTMLDivElement;
-      svgEl.classList.add("slide-down");
-      svgEl.classList.remove("hidden");
+    console.assert(currentPromptIndex < PROMPTS.length);
+    console.log("interval", currentPromptIndex, animationState, PROMPTS[currentPromptIndex].q);
+
+    if (animationState == 'START' || animationState == 'NEXT_PROMPT') {
+      if (currentPromptIndex > 0) {
+        let svgEl = svgDiv.current?.childNodes.item(currentPromptIndex - 1) as HTMLDivElement;
+        svgEl?.classList.add("fade-out");
+      }
+      setCurrentQuery("");
+      setAnimationState('CHAR_INPUT');
+
+    } else if (animationState == 'CHAR_INPUT') {
+      const promptQuery = PROMPTS[currentPromptIndex]?.q;
+      if (currentQuery.length < promptQuery.length) {
+        setCurrentQuery(promptQuery.substring(0, currentQuery.length + 1));
+        if (inputEl.current) {
+          // Set scrollLeft so we always see the full input even on narrow screens
+          inputEl.current.scrollLeft = inputEl.current.scrollWidth;
+        }
+      } else {
+        setCurrentQuery(currentQuery);
+        if (svgDiv.current) {
+          // Switch animated image.
+          let svgEl = svgDiv.current.childNodes.item(currentPromptIndex) as HTMLDivElement;
+          svgEl.classList.add("slide-down");
+          svgEl.classList.remove("hidden");
+        }
+
+        if (currentPromptIndex + 1 < PROMPTS.length) {
+          setAnimationState('NEXT_PROMPT');
+          setCurrentPromptIndex(currentPromptIndex + 1);
+        } else {
+          setAnimationState('DONE');
+          console.log("all done");
+        }
+      }
     }
-    setCurrentPromptIndex(currentPromptIndex + 1);
-    if (currentPromptIndex + 1 == PROMPTS.length) {
-      setIsAnimationRunning(false);
-      console.log("all done");
-    }
-  }, isAnimationRunning ? NEXT_PROMPT_DELAY_MS : null);
+  }, ANIMATION_TIMING[animationState]);
 
   return (
     <Container>
@@ -230,26 +272,15 @@ export const ExploreSection = () => {
             );
           }}
         />
-        <SearchAnimationContainer>
-  {/* <div id="search-animation-container" className="container"> */}
-    {/* <div id="default-text">
-      <div className="content">
-        <h3 className="header">Data tells interesting stories</h3>
-        <h4 className="sub-header invisible" id="header-prompt">Ask a question like...</h4>
-        <h4 className="sub-header hidden" id="header-mission">Data Commons, an initiative from Google,<br />organizes the world’s publicly available data<br />and makes it more accessible and useful</h4>
-      </div>
-    </div> */}
-    <div id="search-sequence" ref={searchSequenceContainer}>
-      <Input id="animation-search-input" ref={inputEl} placeholder="" autoComplete="off" type="text" className="pac-target-input search-input-text form-control" aria-invalid="false" value={currentQuery} readOnly></Input>
-      <div id="result-svg" ref={svgDiv}>
-        { PROMPTS.map((prompt, index) =>
-          <div className="search-svg hidden" id={`svg-${index}`} style={{backgroundImage: `url(./images/datacommons/homepage/${prompt.svg})`}}></div>
-        )}
-      </div>
-    </div>
-  {/* </div> */}
-        </SearchAnimationContainer>
       </SearchBarContainer>
+      <SearchAnimationContainer>
+        <input id="animation-search-input" ref={inputEl} placeholder="" autoComplete="off" type="text" className="pac-target-input search-input-text form-control" aria-invalid="false" value={currentQuery} readOnly></input>
+        <div id="result-svg" ref={svgDiv}>
+          { PROMPTS.map((prompt, index) =>
+            <div className="search-svg hidden" id={`svg-${index}`} key={`svg-${index}`} style={{backgroundImage: `url(./images/datacommons/homepage/${prompt.svg})`}}></div>
+          )}
+        </div>
+      </SearchAnimationContainer>
       <Description>
         Delve into SDG data and insights with precision - where your questions
         lead the way!
@@ -257,6 +288,7 @@ export const ExploreSection = () => {
     </Container>
   );
 
+  /*
   function startNextPrompt() {
     let inputLength = 0;
     if (currentPromptIndex < PROMPTS.length) {
@@ -321,4 +353,5 @@ export const ExploreSection = () => {
       }, INITIAL_MISSION_ON_SCREEN_DELAY_MS);
     }, INITIAL_MISSION_FADE_IN_DELAY_MS);
   }
+  */
 };
