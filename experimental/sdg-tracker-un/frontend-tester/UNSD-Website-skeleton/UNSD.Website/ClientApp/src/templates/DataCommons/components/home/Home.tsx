@@ -49,7 +49,7 @@ const Home = () => {
         }}
       >
         <HomeContainer>
-          {/* <div className="page-header">
+          <div className="page-header">
             <img src={"./images/datacommons/un-dc-sdg-logo.svg"} />
           </div>
           <SectionDescription>
@@ -57,11 +57,11 @@ const Home = () => {
             integrating authoritative SDG data and information resources from
             across the UN System into a public repository with advanced search
             functionality and a modern, user-friendly interface.
-          </SectionDescription> */}
+          </SectionDescription>
         </HomeContainer>
         <ExploreSection />
-        {/* <PlaceSection /> */}
-        {/* <GoalSection /> */}
+        <GoalSection />
+        <PlaceSection />
       </AppLayoutContent>
     </>
   );

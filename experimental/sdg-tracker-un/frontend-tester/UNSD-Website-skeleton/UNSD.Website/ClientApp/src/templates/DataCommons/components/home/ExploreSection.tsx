@@ -162,6 +162,10 @@ function useInterval(callback, delay: number | null) {
   }, [delay]);
 }
 
+function modulo(n, d) {
+  return ((n % d) + d) % d;
+}
+
 export const ExploreSection = () => {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [animationState, setAnimationState] = useState('START');
@@ -173,10 +177,10 @@ export const ExploreSection = () => {
   const PROMPTS = [
     {q: "What is the electricity coverage in Africa?", svg: "electricity-coverage-africa.svg"},
     {q: "How has access to electricity improved in Kenya?", svg: "electricity-improvement-kenya.svg"},
-    {q: "Progress on health-related goals in Bangladesh?", svg: "electricity-coverage-africa.svg"},
-    {q: "Access to primary school education in Afghanistan", svg: "electricity-improvement-kenya.svg"},
-    {q: "Violence vs poverty across the world", svg: "electricity-coverage-africa.svg"},
-    {q: "Women in managerial positions in India", svg: "electricity-improvement-kenya.svg"},
+    // {q: "Progress on health-related goals in Bangladesh?", svg: "electricity-coverage-africa.svg"},
+    // {q: "Access to primary school education in Afghanistan", svg: "electricity-improvement-kenya.svg"},
+    // {q: "Violence vs poverty across the world", svg: "electricity-coverage-africa.svg"},
+    // {q: "Women in managerial positions in India", svg: "electricity-improvement-kenya.svg"},
   ];
 
   const ANIMATION_TIMING = {
@@ -194,10 +198,11 @@ export const ExploreSection = () => {
     console.log("interval", currentPromptIndex, animationState, PROMPTS[currentPromptIndex].q);
 
     if (animationState == 'START' || animationState == 'NEXT_PROMPT') {
-      if (currentPromptIndex > 0) {
-        let svgEl = svgDiv.current?.childNodes.item(currentPromptIndex - 1) as HTMLDivElement;
-        svgEl?.classList.add("fade-out");
-      }
+      let svgEl = svgDiv.current?.childNodes.item(modulo((currentPromptIndex - 1), PROMPTS.length)) as HTMLDivElement;
+      svgEl?.classList.add("fade-out");
+      svgEl?.classList.remove("slide-down");
+      console.log(svgEl);
+
       setCurrentQuery("");
       setAnimationState('CHAR_INPUT');
 
@@ -216,6 +221,7 @@ export const ExploreSection = () => {
           let svgEl = svgDiv.current.childNodes.item(currentPromptIndex) as HTMLDivElement;
           svgEl.classList.add("slide-down");
           svgEl.classList.remove("hidden");
+          svgEl.classList.remove("fade-out");
         }
 
         if (currentPromptIndex + 1 < PROMPTS.length) {
