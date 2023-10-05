@@ -27,8 +27,6 @@ import {
 // @ts-ignore
 import { routePathConstants } from "../../../../../src/helper/Common/RoutePathConstants";
 import { useEffect, useRef, useState } from "react";
-import { Input } from "antd";
-import { animation } from "polished";
 
 const Container = styled(HomeSection)`
   background-image: url(./images/datacommons/explore-background.png);
@@ -165,44 +163,20 @@ function useInterval(callback, delay: number | null) {
 }
 
 export const ExploreSection = () => {
-  const CHARACTER_INPUT_INTERVAL_MS = 45;
-  const NEXT_PROMPT_DELAY_MS = 5000;
-  const INITIAL_MISSION_ON_SCREEN_DELAY_MS = 2000;
-  const INITIAL_MISSION_FADE_IN_DELAY_MS = 1000;
-  const ANSWER_DELAY_MS = 2000;
-  const FADE_OUT_MS = 800;
-  const FADE_OUT_CLASS = "fade-out";
-  const HIDDEN_CLASS = "hidden";
-  const SLIDE_DOWN_CLASS = "slide-down";
-  const INVISIBLE_CLASS = "invisible";
-  const FADE_IN_CLASS = "fade-in";
-
-  // let inputIntervalTimer, nextInputTimer: ReturnType<typeof setTimeout>;
-  // let currentPromptIndex = 0;
-  // let prompt;
-  const inputIntervalTimer = useRef(null);
-  const nextInputTimer = useRef(null);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
-  const [prompt, setPrompt] = useState("");
   const [animationState, setAnimationState] = useState('START');
-  const inputEl = useRef<HTMLInputElement>(null);
-  const searchSequenceContainer = useRef<HTMLDivElement>(null);
-  // const defaultTextContainer = useRef();
-  const svgDiv = useRef<HTMLDivElement>(null);
-  // const promptDiv = useRef();
-  // const missionDiv = useRef();
-  // const resultsElList = useRef();
-
-  // const [isAnimationRunning, setIsAnimationRunning] = useState(true);
   const [currentQuery, setCurrentQuery] = useState("");
+
+  const inputEl = useRef<HTMLInputElement>(null);
+  const svgDiv = useRef<HTMLDivElement>(null);
 
   const PROMPTS = [
     {q: "What is the electricity coverage in Africa?", svg: "electricity-coverage-africa.svg"},
-    {q: "How has access to electricity improved in Kenya?", svg: `electricity-improvement-kenya.svg`},
-    // {q: "Progress on health-related goals in Bangladesh?", svg: ""},
-    // {q: "Access to primary school education in Afghanistan", svg: ""},
-    // {q: "Violence vs poverty across the world", svg: ""},
-    // {q: "Women in managerial positions in India", svg: ""},
+    {q: "How has access to electricity improved in Kenya?", svg: "electricity-improvement-kenya.svg"},
+    {q: "Progress on health-related goals in Bangladesh?", svg: "electricity-coverage-africa.svg"},
+    {q: "Access to primary school education in Afghanistan", svg: "electricity-improvement-kenya.svg"},
+    {q: "Violence vs poverty across the world", svg: "electricity-coverage-africa.svg"},
+    {q: "Women in managerial positions in India", svg: "electricity-improvement-kenya.svg"},
   ];
 
   const ANIMATION_TIMING = {
@@ -248,8 +222,10 @@ export const ExploreSection = () => {
           setAnimationState('NEXT_PROMPT');
           setCurrentPromptIndex(currentPromptIndex + 1);
         } else {
-          setAnimationState('DONE');
-          console.log("all done");
+          setAnimationState('NEXT_PROMPT');
+          setCurrentPromptIndex(0);
+          // setAnimationState('DONE');
+          // console.log("all done");
         }
       }
     }
@@ -287,71 +263,4 @@ export const ExploreSection = () => {
       </Description>
     </Container>
   );
-
-  /*
-  function startNextPrompt() {
-    let inputLength = 0;
-    if (currentPromptIndex < PROMPTS.length) {
-      setPrompt(PROMPTS[currentPromptIndex].q);
-      console.log(currentPromptIndex, prompt, PROMPTS[currentPromptIndex]);
-    } else {
-      // End the animation
-      // setTimeout(() => {
-      //   defaultTextContainer.classList.remove(FADE_OUT_CLASS);
-      // }, FADE_OUT_MS);
-      searchSequenceContainer.current.classList.add(FADE_OUT_CLASS);
-      clearInterval(nextInputTimer.current);
-      nextInputTimer.current = undefined;
-      return;
-    }
-    // Fade out the previous query
-    if (currentPromptIndex == 0) {
-      // defaultTextContainer.classList.add(FADE_OUT_CLASS);
-      searchSequenceContainer.current.classList.remove(HIDDEN_CLASS);
-    } else {
-      // resultsElList.item(currentPromptIndex.current - 1).classList.add(FADE_OUT_CLASS);
-    }
-    setTimeout(() => {
-      if (currentPromptIndex == 0) {
-        // defaultTextContainer.classList.add(FADE_OUT_CLASS);
-        svgDiv.current.classList.remove(HIDDEN_CLASS);
-        // promptDiv.classList.add(HIDDEN_CLASS);
-        // missionDiv.classList.remove(HIDDEN_CLASS);
-      }
-      // prompt.classList.remove(HIDDEN_CLASS);
-      // prompt.classList.add(SLIDE_DOWN_CLASS);
-      if (currentPromptIndex > 0) {
-        // resultsElList.item(currentPromptIndex.current - 1).classList.add(HIDDEN_CLASS);
-      }
-      console.log("incrementing prompt index");
-      setCurrentPromptIndex(currentPromptIndex.current + 1);
-    }, ANSWER_DELAY_MS);
-
-    // inputIntervalTimer.current = setInterval(() => {
-    //   // Start typing animation
-    //   if (inputLength <= prompt.dataset.query.length) {
-    //     inputEl.value = prompt.dataset.query.substring(0, inputLength);
-    //     // Set scrollLeft so we always see the full input even on narrow screens
-    //     inputEl.scrollLeft = inputEl.scrollWidth;
-    //     inputLength++;
-    //   } else {
-    //     // Slide in the answer
-    //     clearInterval(inputIntervalTimer.current);
-    //   }
-    // }, CHARACTER_INPUT_INTERVAL_MS);
-  }
-
-  function startSearchAnimation() {
-    setTimeout(() => {
-      // promptDiv.classList.remove(INVISIBLE_CLASS);
-      // promptDiv.classList.add(FADE_IN_CLASS);
-      setTimeout(() => {
-        startNextPrompt();
-        nextInputTimer.current = setInterval(() => {
-          startNextPrompt();
-        }, NEXT_PROMPT_DELAY_MS);
-      }, INITIAL_MISSION_ON_SCREEN_DELAY_MS);
-    }, INITIAL_MISSION_FADE_IN_DELAY_MS);
-  }
-  */
 };
