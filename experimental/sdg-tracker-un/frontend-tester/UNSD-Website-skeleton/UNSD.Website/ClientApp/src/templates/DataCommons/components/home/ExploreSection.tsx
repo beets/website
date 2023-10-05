@@ -87,6 +87,43 @@ const SearchBarContainer = styled(HomeSearchContainer)`
   }
 `;
 
+const SearchAnimationContainer = styled(Container)`
+  #result-svg {
+    position: relative;
+    height: 300px;
+  }
+  .search-svg {
+    background: #fff;
+    border: 1px solid red;
+    display: block;
+    // height: 300px;
+    // max-width: 100%;
+    margin: 0 auto;
+    position: absolute;
+      background-position: top center;
+      background-repeat: no-repeat;
+      background-size: auto 300px;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+  }
+  .hidden {
+    display: none !important;
+    position: absolute;
+  }
+  .slide-down {
+    animation: slide-down 600ms;
+  }
+  @keyframes slide-down {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+`;
+
 function useInterval(callback, delay) {
   const savedCallback = useRef();
   useEffect(() => {
@@ -125,9 +162,9 @@ export const ExploreSection = () => {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [prompt, setPrompt] = useState("");
   const inputEl = useRef(null);
-  const searchSequenceContainer = useRef(null);
+  const searchSequenceContainer = useRef<HTMLDivElement>(null);
   // const defaultTextContainer = useRef();
-  const svgDiv = useRef(null);
+  const svgDiv = useRef<HTMLDivElement>(null);
   // const promptDiv = useRef();
   // const missionDiv = useRef();
   const resultsElList = useRef();
@@ -136,9 +173,12 @@ export const ExploreSection = () => {
   const [currentQuery, setCurrentQuery] = useState("");
 
   const PROMPTS = [
-    {q: "foobar query 1", svg: "image1"},
-    {q: "foobar query 2", svg: "image1"},
-    {q: "foobar query 3", svg: "image1"}
+    {q: "What is the electricity coverage in Africa?", svg: "electricity-coverage-africa.svg"},
+    {q: "How has access to electricity improved in Kenya?", svg: `electricity-improvement-kenya.svg`},
+    // {q: "Progress on health-related goals in Bangladesh?", svg: ""},
+    // {q: "Access to primary school education in Afghanistan", svg: ""},
+    // {q: "Violence vs poverty across the world", svg: ""},
+    // {q: "Women in managerial positions in India", svg: ""},
   ];
 
   const history = useHistory();
@@ -156,11 +196,17 @@ export const ExploreSection = () => {
   //   // startSearchAnimation();
   // }, [currentPromptIndex]);
   useInterval(() => {
-    setCurrentPromptIndex(currentPromptIndex + 1);
     console.log("interval", currentPromptIndex, prompt, PROMPTS[currentPromptIndex]?.q);
     // debugger;
     // inputEl.current.value = PROMPTS[currentPromptIndex]?.q;
     setCurrentQuery(PROMPTS[currentPromptIndex]?.q);
+    if (svgDiv.current) {
+      // Switch animated image.
+      let svgEl = svgDiv.current.childNodes.item(currentPromptIndex) as HTMLDivElement;
+      svgEl.classList.add("slide-down");
+      svgEl.classList.remove("hidden");
+    }
+    setCurrentPromptIndex(currentPromptIndex + 1);
     if (currentPromptIndex + 1 == PROMPTS.length) {
       setIsAnimationRunning(false);
       console.log("all done");
@@ -184,7 +230,8 @@ export const ExploreSection = () => {
             );
           }}
         />
-  <div id="search-animation-container" className="container">
+        <SearchAnimationContainer>
+  {/* <div id="search-animation-container" className="container"> */}
     {/* <div id="default-text">
       <div className="content">
         <h3 className="header">Data tells interesting stories</h3>
@@ -192,13 +239,16 @@ export const ExploreSection = () => {
         <h4 className="sub-header hidden" id="header-mission">Data Commons, an initiative from Google,<br />organizes the world’s publicly available data<br />and makes it more accessible and useful</h4>
       </div>
     </div> */}
-    <div id="search-sequence" ref={searchSequenceContainer} className="hidden">
+    <div id="search-sequence" ref={searchSequenceContainer}>
       <Input id="animation-search-input" ref={inputEl} placeholder="" autoComplete="off" type="text" className="pac-target-input search-input-text form-control" aria-invalid="false" value={currentQuery} readOnly></Input>
       <div id="result-svg" ref={svgDiv}>
-        {/* <div className="result hidden" data-query="Which countries in Africa have had the greatest increase in electricity access?" style={{backgroundImage: `url('/images/home-answers/access-electricity.svg')`}}></div> */}
+        { PROMPTS.map((prompt, index) =>
+          <div className="search-svg hidden" id={`svg-${index}`} style={{backgroundImage: `url(./images/datacommons/homepage/${prompt.svg})`}}></div>
+        )}
       </div>
     </div>
-  </div>
+  {/* </div> */}
+        </SearchAnimationContainer>
       </SearchBarContainer>
       <Description>
         Delve into SDG data and insights with precision - where your questions
