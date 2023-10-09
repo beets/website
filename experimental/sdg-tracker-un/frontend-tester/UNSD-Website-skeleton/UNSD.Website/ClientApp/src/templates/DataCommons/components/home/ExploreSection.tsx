@@ -145,15 +145,21 @@ const SearchAnimationContainer = styled(HomeSearchContainer)`
   }
 `;
 
-function useInterval(callback, delay: number | null) {
-  const savedCallback = useRef();
+/**
+ * Adds a hook that sets up an interval and clears it after unmounting.
+ * https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+ */
+function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef<() => void>();
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
   useEffect(() => {
     function tick() {
-      savedCallback.current();
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
     }
     if (delay !== null) {
       let id = setInterval(tick, delay);
@@ -162,13 +168,34 @@ function useInterval(callback, delay: number | null) {
   }, [delay]);
 }
 
-function modulo(n, d) {
+/**
+ * Modulo (unlike JS's % which is remainder. See:
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder
+ *
+ * -1 % 5 = -1
+ * modulo(-1, 5) = 4
+ */
+function modulo(n: number, d: number) {
   return ((n % d) + d) % d;
 }
 
 export const ExploreSection = () => {
+  enum ANIMATION_STATES {
+    START,
+    CHAR_INPUT,
+    NEXT_PROMPT,
+    DONE
+  };
+
+  const ANIMATION_TIMING = {
+    [ANIMATION_STATES.START]: 0,
+    [ANIMATION_STATES.CHAR_INPUT]: 45,
+    [ANIMATION_STATES.NEXT_PROMPT]: 4000,
+    [ANIMATION_STATES.DONE]: null,
+  };
+
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
-  const [animationState, setAnimationState] = useState('START');
+  const [animationState, setAnimationState] = useState<ANIMATION_STATES>(ANIMATION_STATES.START);
   const [currentQuery, setCurrentQuery] = useState("");
 
   const inputEl = useRef<HTMLInputElement>(null);
@@ -183,13 +210,6 @@ export const ExploreSection = () => {
     // {q: "Women in managerial positions in India", svg: "electricity-improvement-kenya.svg"},
   ];
 
-  const ANIMATION_TIMING = {
-    'START': 0,
-    'CHAR_INPUT': 45,
-    'NEXT_PROMPT': 4000,
-    'DONE': null,
-  };
-
   const history = useHistory();
 
   // Search animation sequence
@@ -197,16 +217,16 @@ export const ExploreSection = () => {
     console.assert(currentPromptIndex < PROMPTS.length);
     console.log("interval", currentPromptIndex, animationState, PROMPTS[currentPromptIndex].q);
 
-    if (animationState == 'START' || animationState == 'NEXT_PROMPT') {
+    if (animationState == ANIMATION_STATES.START || animationState == ANIMATION_STATES.NEXT_PROMPT) {
       let svgEl = svgDiv.current?.childNodes.item(modulo((currentPromptIndex - 1), PROMPTS.length)) as HTMLDivElement;
       svgEl?.classList.add("fade-out");
-      svgEl?.classList.remove("slide-down");
+      svgEl?.classList.remove("slide-down", "hidden");
       console.log(svgEl);
 
       setCurrentQuery("");
-      setAnimationState('CHAR_INPUT');
+      setAnimationState(ANIMATION_STATES.CHAR_INPUT);
 
-    } else if (animationState == 'CHAR_INPUT') {
+    } else if (animationState == ANIMATION_STATES.CHAR_INPUT) {
       const promptQuery = PROMPTS[currentPromptIndex]?.q;
       if (currentQuery.length < promptQuery.length) {
         setCurrentQuery(promptQuery.substring(0, currentQuery.length + 1));
@@ -220,15 +240,14 @@ export const ExploreSection = () => {
           // Switch animated image.
           let svgEl = svgDiv.current.childNodes.item(currentPromptIndex) as HTMLDivElement;
           svgEl.classList.add("slide-down");
-          svgEl.classList.remove("hidden");
-          svgEl.classList.remove("fade-out");
+          svgEl.classList.remove("hidden", "fade-out");
         }
 
         if (currentPromptIndex + 1 < PROMPTS.length) {
-          setAnimationState('NEXT_PROMPT');
+          setAnimationState(ANIMATION_STATES.NEXT_PROMPT);
           setCurrentPromptIndex(currentPromptIndex + 1);
         } else {
-          setAnimationState('NEXT_PROMPT');
+          setAnimationState(ANIMATION_STATES.NEXT_PROMPT);
           setCurrentPromptIndex(0);
           // setAnimationState('DONE');
           // console.log("all done");
