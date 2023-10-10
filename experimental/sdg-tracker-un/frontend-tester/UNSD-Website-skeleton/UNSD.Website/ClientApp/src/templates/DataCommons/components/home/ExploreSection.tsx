@@ -104,7 +104,6 @@ const SearchAnimationContainer = styled(HomeSearchContainer)`
     height: 300px;
   }
   .search-svg {
-    background: #fff;
     display: block;
     margin: 0 auto;
     position: absolute;
@@ -204,10 +203,10 @@ export const ExploreSection = () => {
   const PROMPTS = [
     {q: "What is the electricity coverage in Africa?", svg: "electricity-coverage-africa.svg"},
     {q: "How has access to electricity improved in Kenya?", svg: "electricity-improvement-kenya.svg"},
-    // {q: "Progress on health-related goals in Bangladesh?", svg: "electricity-coverage-africa.svg"},
-    // {q: "Access to primary school education in Afghanistan", svg: "electricity-improvement-kenya.svg"},
-    // {q: "Violence vs poverty across the world", svg: "electricity-coverage-africa.svg"},
-    // {q: "Women in managerial positions in India", svg: "electricity-improvement-kenya.svg"},
+    {q: "Progress on health-related goals in Bangladesh?", svg: "health-bangladesh.svg"},
+    {q: "Access to primary school education in Afghanistan", svg: "primary-afghanistan.svg"},
+    // {q: "Violence vs poverty across the world", svg: ""},
+    // {q: "Women in managerial positions in India", svg: ""},
   ];
 
   const history = useHistory();
@@ -249,8 +248,6 @@ export const ExploreSection = () => {
         } else {
           setAnimationState(ANIMATION_STATES.NEXT_PROMPT);
           setCurrentPromptIndex(0);
-          // setAnimationState('DONE');
-          // console.log("all done");
         }
       }
     }
