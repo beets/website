@@ -2864,7 +2864,7 @@ ul#expList li a {
 
 /* Footer CSS*/
 .ant-layout-footer {
-  margin: 24px 0px 0px 0px;
+  margin: 0;
   padding: 24px 0px;
   color: white;
   font-size: 13px;

@@ -120,15 +120,22 @@ export const SearchBar: React.FC<{
   initialQuery?: string;
   isSearching?: boolean;
   onSearch: (query: string) => void;
+  onFocus?: () => void;
+  clearInputOnFocus?: boolean;
   placeholder?: string;
-}> = ({ initialQuery, isSearching, onSearch, placeholder }) => {
+}> = ({ initialQuery, isSearching, onSearch, onFocus, clearInputOnFocus, placeholder }) => {
   const [query, setQuery] = useState("");
 
+  console.log("initial query", query);
   useEffect(() => {
     if (initialQuery) {
+      console.log("updatig initial query: ", initialQuery);
       setQuery(initialQuery);
     }
   }, [initialQuery]);
+
+  console.log("initial query", query);
+  console.log("query", query);
 
   return (
     <SearchInputContainer>
@@ -145,6 +152,12 @@ export const SearchBar: React.FC<{
           value={query}
           disabled={isSearching}
           onChange={(e) => setQuery(e.currentTarget.value)}
+          onFocus={() => {
+            if (clearInputOnFocus) {
+              setQuery("");
+            }
+            onFocus && onFocus()
+          }}
           onPressEnter={() => {
             onSearch(query);
           }}
