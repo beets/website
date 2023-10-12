@@ -197,7 +197,7 @@ export const ExploreSection = () => {
   const [animationState, setAnimationState] = useState<ANIMATION_STATES>(ANIMATION_STATES.START);
   const [currentQuery, setCurrentQuery] = useState("");
 
-  const inputEl = useRef(null);
+  const inputEl = useRef<HTMLInputElement>(null);
   const svgDiv = useRef<HTMLDivElement>(null);
 
   const PROMPTS = [
@@ -229,6 +229,10 @@ export const ExploreSection = () => {
       const promptQuery = PROMPTS[currentPromptIndex]?.q;
       if (currentQuery.length < promptQuery.length) {
         setCurrentQuery(promptQuery.substring(0, currentQuery.length + 1));
+        if (inputEl.current) {
+          // Set scrollLeft so we always see the full input even on narrow screens
+          inputEl.current.scrollLeft = inputEl.current.scrollWidth;
+        }
       } else {
         setCurrentQuery(currentQuery);
         if (svgDiv.current) {
@@ -249,16 +253,13 @@ export const ExploreSection = () => {
     }
   }, ANIMATION_TIMING[animationState]);
 
-  console.log(currentQuery);
-
   return (
     <Container>
       <Header>Explore UN Data Commons for the SDGs</Header>
       <SearchBarContainer>
         <SearchBar
-          initialQuery={currentQuery}
+          initialQuery={SAMPLE_NL_QUERY}
           isSearching={false}
-          // ref={inputEl}
           onSearch={(q) => {
             const searchParams = new URLSearchParams();
             searchParams.set(QUERY_PARAM_QUERY, q);
@@ -268,15 +269,10 @@ export const ExploreSection = () => {
               }search?${searchParams.toString()}`
             );
           }}
-          clearInputOnFocus={true}
-          onFocus={() => {
-            setAnimationState(ANIMATION_STATES.DONE);
-            setCurrentQuery('');
-            console.log("clearing current query");
-          }}
         />
       </SearchBarContainer>
       <SearchAnimationContainer>
+        <input id="animation-search-input" ref={inputEl} placeholder="" autoComplete="off" type="text" className="pac-target-input search-input-text form-control" aria-invalid="false" value={currentQuery} readOnly></input>
         <div id="result-svg" ref={svgDiv}>
           { PROMPTS.map((prompt, index) =>
             <div className="search-svg hidden" id={`svg-${index}`} key={`svg-${index}`} style={{backgroundImage: `url(./images/datacommons/homepage/${prompt.svg})`}}></div>
