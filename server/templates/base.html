@@ -108,17 +108,14 @@
   </script>
 </head>
 
-<body {% if not is_show_header_search_bar %}class="no-header-search-bar"{% endif %}>
-
+<body>
 <div id="metadata-base" class="d-none"
-  data-header="{{ HEADER_MENU_V2 }}"
+  data-header="{{ HEADER_MENU }}"
   data-footer="{{ FOOTER_MENU }}"
   data-logo-path="{{ LOGO_PATH }}"
-  data-logo-width="{{ LOGO_WIDTH }}"
   data-name="{{ NAME }}"
   data-show-disaster="{{ SHOW_DISASTER }}"
   data-show-sustainability="{{ SHOW_SUSTAINABILITY }}"
-  data-show-header-search-bar="{{ is_show_header_search_bar }}"
   data-hide-full-footer="{{ is_hide_full_footer }}"
   data-hide-sub-footer="{{ is_hide_sub_footer }}"
   data-subfooter-extra="{{ subfooter_extra_content|safe }}"
@@ -132,13 +129,12 @@
 <script src={{url_for('static', filename='base.js', t=config['VERSION'])}} async></script>
 
 <div id="main">
-  <header id="main-header">
-  </header>
+  <div id="app-header-container"></div>
   <main id="{{ main_id }}" class="main-content">
     {% block content %}
     {% endblock %}
   </main>
-  <footer id="main-footer"></footer>
+  <div id="app-footer-container"></div>
 </div>
 
 {# Compile this down (or manually implement). Used only for nav bar so far #}

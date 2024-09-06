@@ -21,19 +21,15 @@
 import React, { ReactElement } from "react";
 
 import { HeaderMenu, Labels, Routes } from "../../shared/types/base";
-import HeaderBar from "./components/header_bar/header_bar";
+import HeaderBar from "./components/header_bar";
 
 interface HeaderAppProps {
   //the name of the application (this may not be "Data Commons" in forked versions).
   name: string;
   //a path to the logo to be displayed in the header
   logoPath: string;
-  //the width of the logo - if provided, this will be used to prevent content bouncing as the logo loads in after the rest of the content.
-  logoWidth: string;
   //the data that will populate the header menu.
   headerMenu: HeaderMenu[];
-  //if set true, the header menu will show. It will default to false on all pages unless the {% set is_show_header_search_bar = true %} is set.
-  showHeaderSearchBar: boolean;
   //the labels dictionary - all labels will be passed through this before being rendered. If no value exists, the dictionary will return the key that was sent.
   labels: Labels;
   //the routes dictionary - this is used to convert routes to resolved urls
@@ -46,9 +42,7 @@ interface HeaderAppProps {
 export function HeaderApp({
   name,
   logoPath,
-  logoWidth,
   headerMenu,
-  showHeaderSearchBar,
   labels,
   routes,
 }: HeaderAppProps): ReactElement {
@@ -57,9 +51,7 @@ export function HeaderApp({
       <HeaderBar
         name={name}
         logoPath={logoPath}
-        logoWidth={logoWidth}
         menu={headerMenu}
-        showHeaderSearchBar={showHeaderSearchBar}
         labels={labels}
         routes={routes}
       />

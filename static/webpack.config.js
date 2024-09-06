@@ -46,7 +46,6 @@ const config = {
     mcf_playground: __dirname + "/js/mcf_playground.js",
     base: [
       __dirname + "/js/apps/base/main.ts",
-      __dirname + "/css/core.scss",
     ],
     place: [
       __dirname + "/js/place/place.ts",
@@ -154,6 +153,9 @@ const config = {
     homepage: [
       __dirname + "/js/apps/homepage/main.ts",
       __dirname + "/css/homepage.scss",
+    ],
+    homepage_v2: [
+      __dirname + "/js/apps/homepage/main_v2.ts",
     ],
     homepage_custom_dc: [
       __dirname + "/js/apps/homepage/main_custom_dc.ts",

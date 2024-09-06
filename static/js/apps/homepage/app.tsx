@@ -15,8 +15,9 @@
  */
 
 /**
- * Main component for Version 2 of the homepage.
+ * Main component for homepage.
  */
+import React, { ReactElement } from "react";
 
 //TODO: fold this into app.tsx when revamp is complete and final PR is ready.
 
@@ -50,20 +51,20 @@ interface AppProps {
 /**
  * Application container
  */
-export function App({
-  topics,
-  partners,
-  sampleQuestions,
-  routes,
-}: AppProps): ReactElement {
+export function App(): ReactElement {
   return (
-    <>
-      <HeroVideo routes={routes} />
-      <Topics topics={topics} />
-      <SampleQuestions sampleQuestions={sampleQuestions} />
-      <Tools routes={routes} />
-      <Build routes={routes} />
-      <Partners partners={partners} gaEvent={GA_EVENT_HOMEPAGE_CLICK} />
-    </>
+    <NlSearchBar
+      inputId="query-search-input"
+      onSearch={(q): void => {
+        triggerGAEvent(GA_EVENT_NL_SEARCH, {
+          [GA_PARAM_QUERY]: q,
+          [GA_PARAM_SOURCE]: GA_VALUE_SEARCH_SOURCE_HOMEPAGE,
+        });
+        window.location.href = `/explore#q=${encodeURIComponent(q)}`;
+      }}
+      placeholder={"Enter a question to explore"}
+      initialValue={""}
+      shouldAutoFocus={false}
+    />
   );
 }
