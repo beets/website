@@ -20,7 +20,7 @@
 
 import React, { ReactElement } from "react";
 
-import { HeaderMenu, Labels, Routes } from "../../../../shared/types/base";
+import { HeaderMenuV2, Labels, Routes } from "../../../../shared/types/base";
 import HeaderBarSearch from "./header_bar_search";
 import HeaderLogo from "./header_logo";
 import MenuDesktop from "./menu_desktop";
@@ -31,12 +31,8 @@ interface HeaderBarProps {
   name: string;
   //a path to the logo to be displayed in the header
   logoPath: string;
-  //the width of the logo - if provided, this will be used to prevent content bouncing as the logo loads in after the rest of the content.
-  logoWidth: string;
   //the data that will populate the header menu.
-  menu: HeaderMenu[];
-  //if set true, the header menu will show - this value is pulled in from the page template and will default to false.
-  showHeaderSearchBar: boolean;
+  menu: HeaderMenuV2[];
   //the labels dictionary - all labels will be passed through this before being rendered. If no value exists, the dictionary will return the key that was sent.
   labels: Labels;
   //the routes dictionary - this is used to convert routes to resolved urls
@@ -46,39 +42,35 @@ interface HeaderBarProps {
 const HeaderBar = ({
   name,
   logoPath,
-  logoWidth,
   menu,
-  showHeaderSearchBar,
   labels,
   routes,
 }: HeaderBarProps): ReactElement => {
   return (
-    <div id="main-header-container">
+    <header id="main-header">
       <nav id="main-nav">
         <div className="navbar-menu-large">
           <HeaderLogo
             name={name}
             logoPath={logoPath}
-            logoWidth={logoWidth}
             labels={labels}
             routes={routes}
           />
-          {showHeaderSearchBar && <HeaderBarSearch />}
+          <HeaderBarSearch />
           <MenuDesktop menu={menu} labels={labels} routes={routes} />
         </div>
         <div className="navbar-menu-mobile">
           <HeaderLogo
             name={name}
             logoPath={logoPath}
-            logoWidth={logoWidth}
             labels={labels}
             routes={routes}
           />
-          {showHeaderSearchBar && <HeaderBarSearch />}
+          <HeaderBarSearch />
           <MenuMobile menu={menu} labels={labels} routes={routes} />
         </div>
       </nav>
-    </div>
+    </header>
   );
 };
 

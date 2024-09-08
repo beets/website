@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-/** A component to render the rich menu drop-down for the mobile menu */
+/* A component to render the rich menu drop-down for the mobile menu */
 
 import React, { ReactElement } from "react";
 
-import { HeaderMenu, Labels, Routes } from "../../../../shared/types/base";
-import MenuRichLinkGroup from "./menu_rich_link_group";
+import { HeaderMenuV2, Labels, Routes } from "../../../../shared/types/base";
 import MenuRichSectionGroup from "./menu_rich_section_group";
 
 interface MenuMobileRichMenuProps {
   //the menu item for which we are rendering the rich menu
-  menuItem: HeaderMenu | null;
+  menuItem: HeaderMenuV2 | null;
   //the labels dictionary - all labels will be passed through this before being rendered. If no value exists, the dictionary will return the key that was sent.
   labels: Labels;
   //the routes dictionary - this is used to convert routes to resolved urls
@@ -41,17 +40,8 @@ const MenuMobileRichMenu = ({
   return (
     <>
       <div className={"introduction-section"}>
-        <h3>{labels[menuItem.introduction?.label ?? menuItem.label]}</h3>
-        {menuItem.introduction?.description && (
-          <p>{menuItem.introduction.description}</p>
-        )}
-        {menuItem.introduction.links?.length > 0 && (
-          <MenuRichLinkGroup
-            links={menuItem.introduction.links}
-            routes={routes}
-            open={true}
-          />
-        )}
+        <h3>{labels[menuItem.label]}</h3>
+        {menuItem.introduction && <p>{menuItem.introduction}</p>}
       </div>
       {menuItem.primarySectionGroups?.length > 0 && (
         <div className={"primary-section"}>
@@ -60,8 +50,6 @@ const MenuMobileRichMenu = ({
               key={index}
               menuGroup={primarySectionGroup}
               routes={routes}
-              type="mobile"
-              open={true}
             />
           ))}
         </div>
@@ -74,8 +62,6 @@ const MenuMobileRichMenu = ({
                 key={index}
                 menuGroup={secondarySectionGroup}
                 routes={routes}
-                type="mobile"
-                open={true}
               />
             )
           )}

@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-/** The content of the desktop version of the header */
+/* The content of the desktop version of the header */
 
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 
-import {
-  GA_EVENT_HEADER_CLICK,
-  GA_PARAM_ID,
-  GA_PARAM_URL,
-  triggerGAEvent,
-} from "../../../../shared/ga_events";
-import useEscapeKeyInputHandler from "../../../../shared/hooks/escape_key_handler";
-import { HeaderMenu, Labels, Routes } from "../../../../shared/types/base";
+import { HeaderMenuV2, Labels, Routes } from "../../../../shared/types/base";
 import { resolveHref, slugify } from "../../utilities/utilities";
 import MenuDesktopRichMenu from "./menu_desktop_rich_menu";
 
 interface MenuDesktopProps {
   //the data that will populate the header menu.
-  menu: HeaderMenu[];
+  menu: HeaderMenuV2[];
   //the labels dictionary - all labels will be passed through this before being rendered. If no value exists, the dictionary will return the key that was sent.
   labels: Labels;
   //the routes dictionary - this is used to convert routes to resolved urls
   routes: Routes;
 }
+
+//TODO: verify the desired length of the timer
+const MENU_CLOSE_TIMER = 250;
 
 const MenuDesktop = ({
   menu,
@@ -46,7 +42,7 @@ const MenuDesktop = ({
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const submenuRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const menuContainerRef = useRef<HTMLDivElement | null>(null);
+  const closeMenuTimer = useRef<NodeJS.Timeout | null>(null);
 
   const resetMenu = (): void => {
     setOpenMenu(null);
@@ -57,13 +53,25 @@ const MenuDesktop = ({
     openMenu === index ? resetMenu() : setOpenMenu(index);
   };
 
-  useEscapeKeyInputHandler(() => {
-    resetMenu();
-  });
-
   const itemMenuTouch = (e: React.TouchEvent, index: number): void => {
     e.preventDefault();
     toggleMenu(index);
+  };
+
+  const handleOpenMenu = (index: number): void => {
+    setOpenMenu(index);
+  };
+
+  const handleMouseLeave = (): void => {
+    closeMenuTimer.current = setTimeout(() => {
+      resetMenu();
+    }, MENU_CLOSE_TIMER);
+  };
+
+  const handleMouseEnter = (): void => {
+    if (closeMenuTimer.current) {
+      clearTimeout(closeMenuTimer.current);
+    }
   };
 
   useEffect(() => {
@@ -73,67 +81,51 @@ const MenuDesktop = ({
   }, [openMenu]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent): void => {
-      if (
-        menuContainerRef.current &&
-        !menuContainerRef.current.contains(event.target as Node) &&
-        !submenuRefs.current.some((ref) => ref?.contains(event.target as Node))
-      ) {
+    const handleScroll = (): void => {
+      if (openMenu !== null) {
         resetMenu();
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [openMenu]);
 
   return (
-    <div className="header-menu" ref={menuContainerRef}>
+    <div
+      className="header-menu"
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+    >
       <ul className="header-menu-list">
         {menu.map((menuItem, index) => (
-          <li key={menuItem.label}>
+          <li
+            key={menuItem.label}
+            onFocus={(): void => !menuItem.url && handleOpenMenu(index)}
+            onClick={(): void => !menuItem.url && toggleMenu(index)}
+            onTouchEnd={(e): void => {
+              if (!menuItem.url) itemMenuTouch(e, index);
+            }}
+          >
             {menuItem.url ? (
               <a
                 className="menu-main-link"
                 href={resolveHref(menuItem.url, routes)}
-                onClick={() => {
-                  triggerGAEvent(GA_EVENT_HEADER_CLICK, {
-                    [GA_PARAM_ID]: `desktop main ${menuItem.id}`,
-                    [GA_PARAM_URL]: menuItem.url,
-                  });
-                  return true;
-                }}
               >
                 {labels[menuItem.label]}
               </a>
             ) : (
               <>
-                <button
-                  className="menu-main-button"
-                  onClick={(): void => {
-                    triggerGAEvent(GA_EVENT_HEADER_CLICK, {
-                      [GA_PARAM_ID]: `desktop ${menuItem.id}`,
-                    });
-                    return !menuItem.url && toggleMenu(index);
-                  }}
-                  onTouchEnd={(e): void => {
-                    if (!menuItem.url) itemMenuTouch(e, index);
-                  }}
+                <span className="menu-main-link">{labels[menuItem.label]}</span>
+                <span
+                  className={`material-icons-outlined menu-main-link menu-arrow-icon ${
+                    openMenu === index ? "open" : ""
+                  }`}
                 >
-                  <span className="menu-main-label">
-                    {labels[menuItem.label]}
-                  </span>
-                  <span
-                    className={`material-icons-outlined menu-main-label menu-arrow-icon ${
-                      openMenu === index ? "open" : ""
-                    }`}
-                  >
-                    keyboard_arrow_down
-                  </span>
-                </button>
+                  keyboard_arrow_down
+                </span>
                 <div
                   ref={(el: HTMLDivElement | null): void => {
                     submenuRefs.current[index] = el;
@@ -146,7 +138,6 @@ const MenuDesktop = ({
                 >
                   <MenuDesktopRichMenu
                     menuItem={menuItem}
-                    labels={labels}
                     routes={routes}
                     open={openMenu === index}
                   />

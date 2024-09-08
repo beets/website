@@ -16,12 +16,7 @@
 
 /* Styles for the header reflected in version 2 of the homepage */
 
-@use "./new_variables" as var;
 @import "base";
-
-$header-desktop-height: 96px;
-$header-mobile-height: 152px;
-$header-mobile-height-xs: 128px;
 
 // Component Variables
 
@@ -32,68 +27,19 @@ $font-family-google-text: "Google Sans Text", Arial, sans-serif,
 
 // Styles
 
-section {
-  &.blue {
-    background-color: var.$color-blue-bckg;
-  }
-  &.big {
-    padding: calc(#{var.$spacing} * 12) 0;
-    margin-bottom: calc(#{var.$spacing} * 6);
-  }
-}
-
-
-#main {
-  padding-top: $header-desktop-height!important;
-  @media (max-width: 620px) {
-    padding-top: $header-mobile-height!important;
-  }
-  @media (max-width: 340px) {
-    padding-top: $header-mobile-height-xs!important;
-  }
-}
-
-.no-header-search-bar {
-  #main {
-    .navbar-menu-mobile {
-      height: $header-desktop-height!important;
-    }
-    @media (max-width: 620px) {
-      padding-top: $header-desktop-height!important;
-    }
-    @media (max-width: 340px) {
-      padding-top: $header-desktop-height!important;
-    }
-  }
-}
-
-
-#main-header-container {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 100;
-  background-color: white;
-  box-shadow: 0 1px 2px rgb(94, 94, 94, 0.1);
-} 
-
 #main-nav {
-  position: relative;
   display: flex;
   align-items: stretch;
   height: fit-content;
+  padding: 0;
 
   .navbar-menu-large {
     display: flex;
     flex-grow: 1;
     align-items: stretch;
-    gap: calc(#{var.$spacing} * 4);
+    gap: 32px;
     margin: auto;
     max-width: 1920px;
-    justify-content: space-between;
-    height: $header-desktop-height;
-    background: white;
 
     @include media-breakpoint-down(xl) {
       gap: 16px;
@@ -106,10 +52,10 @@ section {
       display: flex;
       flex-shrink: 0;
       align-items: center;
+      gap: 0.75rem;
       white-space: nowrap;
-      a {
-        font-size: 1rem!important;
-      }
+      font-size: 1.1rem;
+      line-height: 24px;
     }
     @include media-breakpoint-up(xl) {
       padding: 0 0 0 32px;
@@ -119,12 +65,10 @@ section {
     }
 
     .panel {
-      width: 100vw;
-      left: 0;
-      right: 0;
+      width: 100%;
       position: absolute;
       z-index: 950;
-      top: $header-desktop-height;
+      top: 110px;
       background: white;
       overflow: hidden;
       box-shadow: 0 1px 2px rgb(94, 94, 94, 0.5);
@@ -135,7 +79,6 @@ section {
       display: flex;
       justify-content: right;
       align-items: stretch;
-      transition: flex-basis .4s ease-in-out;
 
       &-list {
         display: flex;
@@ -153,32 +96,14 @@ section {
 
         li {
           display: flex;
-          align-items: stretch;
+          align-items: center;
           margin: 0;
           padding: 0;
-
-          .menu-main-button {
-            border: 0;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            height: 100%;
-            background-color: transparent;
-            .menu-main-label {
-              font-size: 0.875rem;;
-              color: #474747;
-              transition: color 0.3s ease-in-out;
-            }
-          }
+          cursor: pointer;
 
           .menu-main-link {
-            display: flex;
-            align-items: center;
-            height: 100%;
             color: #474747;
             transition: color 0.3s ease-in-out;
-            font-size: 0.875rem;;
           }
 
           &:hover {
@@ -201,9 +126,8 @@ section {
 
       .rich-menu-container {
         position: fixed;
-        top: 96px;
+        top: 110px;
         left: 0;
-        right: 0;
         width: 100vw;
         overflow: hidden;
         background: white;
@@ -221,17 +145,8 @@ section {
         font-family: $font-family-google-text;
         opacity: 0;
         transform: translate3d(0, -16px, 0);
+
         transition: opacity 0.3s ease-out, transform 0.4s ease-out;
-        height: 100%;
-        max-height: calc( 100vh - #{$header-desktop-height}) ;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        scroll-behavior: smooth;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        &::-webkit-scrollbar{
-          display: none;
-        }
 
         &.open {
           opacity: 1;
@@ -254,7 +169,7 @@ section {
         h5 {
           font-family: $font-family-google-title;
           font-size: 1rem;
-          font-weight: 500;
+          font-weight: 600;
           margin-bottom: 16px;
         }
         p, .link-item, .ms-1 {
@@ -269,7 +184,6 @@ section {
             gap: 8px;
             margin: 0;
             padding: 0;
-            font-weight: 500;
             &:hover {
               text-decoration: none;
               .link-title {
@@ -313,7 +227,6 @@ section {
   .navbar-menu-mobile {
     display: flex;
     flex-grow: 1;
-    justify-content: space-between;
     align-items: stretch;
     padding: 24px 16px;
     gap: 16px;
@@ -323,7 +236,6 @@ section {
     @media (max-width: 620px) {
       display: grid;
       grid-template-columns: 1fr min-content;
-      height: $header-mobile-height;
       .header-search-section {
         order: 3;
         grid-column: 1 / span 2;
@@ -335,17 +247,16 @@ section {
     @media (max-width: 340px) {
       padding: 16px;
       gap: 8px;
-      height: $header-mobile-height-xs;
     }
 
     .navbar-brand {
       display: flex;
       flex-shrink: 0;
       align-items: center;
+      gap: 0.75rem;
       white-space: nowrap;
-      a {
-        font-size: 1rem!important;
-      }
+      font-size: 1.1rem;
+      line-height: 24px;
     }
 
     .menu-mobile {
@@ -370,7 +281,7 @@ section {
     }
 
     .menu-main-link {
-      font-size: 0.875rem;
+      font-size: 0.9rem;
       color: #5E5E5E;
     }
     
@@ -462,7 +373,6 @@ section {
 
           .left-panel {
             padding: 16px;
-            padding-bottom: 100px;
             ul {
               display: flex;
               flex-direction: column;
@@ -493,7 +403,6 @@ section {
             flex-direction: column;
             gap: 32px;
             padding: 16px;
-            padding-bottom: 100px;
               h3 {
                 font-family: $font-family-google-title;
                 font-size: 1.4rem;
@@ -509,7 +418,7 @@ section {
               h5 {
                 font-family: $font-family-google-title;
                 font-size: 1rem;
-                font-weight: 500;
+                font-weight: 600;
               }
               p, .link-item, .ms-1 {
                 font-size: 0.9rem;
@@ -638,43 +547,6 @@ section {
   .search-bar.non-empty:focus-within {
     #rich-search-button {
       opacity: 1;
-    }
-  }
-}
-
-// Needs refactor this overrides current styles
-#main-footer-container {
-  padding: 3rem 0!important;
-  .container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    @include media-breakpoint-down(sm) {
-      justify-content: center;
-      gap: 24px;
-    }
-  }
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin: 0;
-    padding: 0;
-    @include media-breakpoint-down(sm) {
-      justify-content: center;
-    }
-    li {
-      display: block;
-      margin: 0;
-      padding: 0;
-      a {
-        color: var(--gm-3-ref-neutral-neutral-40);
-        font-family: var(--font-family-sans-serif);
-        font-weight: 100;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
     }
   }
 }

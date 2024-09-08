@@ -14,39 +14,24 @@
  * limitations under the License.
  */
 
-/** A component to render a section group of the rich menu (both mobile and desktop) */
+/* A component to render a section group of the rich menu (both mobile and desktop) */
 
 import React, { ReactElement } from "react";
 
-import {
-  GA_EVENT_HEADER_CLICK,
-  GA_PARAM_ID,
-  GA_PARAM_URL,
-  triggerGAEvent,
-} from "../../../../shared/ga_events";
 import { HeaderMenuGroup, Routes } from "../../../../shared/types/base";
 import { resolveHref } from "../../utilities/utilities";
-import MenuRichLinkGroup from "./menu_rich_link_group";
 
 interface MenuRichSectionGroupProps {
   //the menu group to be rendered inside a particular location in the rich menu
   menuGroup: HeaderMenuGroup;
   //the routes dictionary - this is used to convert routes to resolved urls
   routes: Routes;
-  //menu type used for tracking
-  type: "desktop" | "mobile";
-  //a flag to indicate whether the menu is open.
-  open: boolean;
 }
 
 const MenuRichSectionGroup = ({
   menuGroup,
   routes,
-  type,
-  open,
 }: MenuRichSectionGroupProps): ReactElement => {
-  const tabIndex = open ? 0 : -1;
-
   return (
     <div className={"group"}>
       {menuGroup.title && <h4>{menuGroup.title}</h4>}
@@ -54,18 +39,7 @@ const MenuRichSectionGroup = ({
         <div key={index} className={"item"}>
           {item.title && item.url ? (
             <h5>
-              <a
-                href={resolveHref(item.url, routes)}
-                className={"item-link"}
-                onClick={() => {
-                  triggerGAEvent(GA_EVENT_HEADER_CLICK, {
-                    [GA_PARAM_ID]: `${type} submenu ${menuGroup.id}-${index}`,
-                    [GA_PARAM_URL]: item.url,
-                  });
-                  return true;
-                }}
-                tabIndex={tabIndex}
-              >
+              <a href={resolveHref(item.url, routes)} className={"item-link"}>
                 {item.linkType === "external" && (
                   <span className="material-icons-outlined">arrow_outward</span>
                 )}
@@ -82,7 +56,35 @@ const MenuRichSectionGroup = ({
           {item.description && <p>{item.description}</p>}
 
           {item.links?.length > 0 && (
-            <MenuRichLinkGroup links={item.links} routes={routes} open={open} />
+            <div className="item-links">
+              {item.links.map((link, index) => (
+                <div key={index} className="link-item">
+                  {link.linkType === "rss" ? (
+                    <>
+                      <a
+                        href={resolveHref(link.url, routes)}
+                        className={"link"}
+                      >
+                        <span className="material-icons-outlined">
+                          rss_feed
+                        </span>
+                        <span className="link-title">RSS Feed</span>
+                      </a>
+                      {link.title && <p>• {link.title}</p>}
+                    </>
+                  ) : (
+                    <a href={resolveHref(link.url, routes)} className={"link"}>
+                      {link.linkType === "external" && (
+                        <span className="material-icons-outlined">
+                          arrow_outward
+                        </span>
+                      )}
+                      <span className="link-title">{link.title}</span>
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       ))}
