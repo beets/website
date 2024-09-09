@@ -20,12 +20,6 @@
 
 import React, { ReactElement, useEffect, useState } from "react";
 
-import {
-  GA_EVENT_HOMEPAGE_CLICK,
-  GA_PARAM_ID,
-  triggerGAEvent,
-} from "../../shared/ga_events";
-
 interface SlideCarouselProps {
   //an array of ReactElements, each of which will be a slide in the carousel
   slides: ReactElement[];
@@ -43,10 +37,6 @@ const SlideCarousel = ({
   const goToSlide = (index: number): void => {
     setIsInteracting(true);
     setActiveIndex(index);
-    // TODO: Pass in GA event so the component can be used on other pages.
-    triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-      [GA_PARAM_ID]: `carousel ${index}`,
-    });
   };
 
   useEffect(() => {
@@ -90,21 +80,20 @@ const SlideCarousel = ({
           ))}
         </div>
       </div>
-      {slides.length > 1 && (
-        <div className="carousel-dots-wrapper">
-          <ul className="carousel-dots">
-            {slides.map((_, index) => (
-              <li
-                key={index}
-                className={`carousel-dot ${
-                  index === activeIndex ? "active" : ""
-                }`}
-                onClick={(): void => goToSlide(index)}
-              />
-            ))}
-          </ul>
-        </div>
-      )}
+
+      <div className="carousel-dots-wrapper">
+        <ul className="carousel-dots">
+          {slides.map((_, index) => (
+            <li
+              key={index}
+              className={`carousel-dot ${
+                index === activeIndex ? "active" : ""
+              }`}
+              onClick={(): void => goToSlide(index)}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

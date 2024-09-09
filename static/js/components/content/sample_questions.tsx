@@ -21,12 +21,6 @@
 import React, { ReactElement, useEffect, useState } from "react";
 
 import { BREAKPOINTS } from "../../apps/base/utilities/utilities";
-import {
-  GA_EVENT_HOMEPAGE_CLICK,
-  GA_PARAM_ID,
-  GA_PARAM_QUERY,
-  triggerGAEvent,
-} from "../../shared/ga_events";
 import { SampleQuestionCategory } from "../../shared/types/homepage";
 import SlideCarousel from "../elements/slide_carousel";
 
@@ -42,20 +36,12 @@ const calculateColumnsPerSlide = (): number => {
   return 3;
 };
 
-const getRandomQuestionFromCategory = (
-  category: SampleQuestionCategory
-): string => {
-  const randomIndex = Math.floor(Math.random() * category.questions.length);
-  return category.questions[randomIndex];
-};
-
 const SampleQuestions = ({
   sampleQuestions,
 }: SampleQuestionsProps): ReactElement => {
   const [columnsPerSlide, setColumnsPerSlide] = useState(() =>
     calculateColumnsPerSlide()
   );
-
   useEffect(() => {
     const handleResize = (): void => {
       setColumnsPerSlide(calculateColumnsPerSlide());
@@ -87,15 +73,7 @@ const SampleQuestions = ({
                         colors[overallIndex % colors.length]
                       }`}
                     >
-                      <a
-                        href={`/explore#q=${encodeURIComponent(question)}`}
-                        onClick={(): void => {
-                          triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                            [GA_PARAM_ID]: `sample-q ${index}-${overallIndex}`,
-                            [GA_PARAM_QUERY]: question,
-                          });
-                        }}
-                      >
+                      <a href={`/explore#q=${encodeURIComponent(question)}`}>
                         <p>{question}</p>
                         <small>{category.category}</small>
                       </a>
@@ -110,48 +88,13 @@ const SampleQuestions = ({
     return slides;
   };
 
-  const createSingleColumnLayout = (): ReactElement => {
-    return (
-      <div className="questions-container">
-        <div className="questions-column">
-          {sampleQuestions.map((category, index) => {
-            const question = getRandomQuestionFromCategory(category);
-            return (
-              <div
-                key={category.category}
-                className={`question-item ${colors[index % colors.length]}`}
-              >
-                <a
-                  href={`/explore#q=${encodeURIComponent(question)}`}
-                  onClick={(): void => {
-                    triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                      [GA_PARAM_ID]: `sample-q ${index}-single`,
-                      [GA_PARAM_QUERY]: question,
-                    });
-                  }}
-                >
-                  <p>{question}</p>
-                  <small>{category.category}</small>
-                </a>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   const slides = createSlides();
 
   return (
     <section id="sample-questions" className="sample-questions">
       <div className="container">
-        <h3>Sample questions</h3>
-        {columnsPerSlide === 1 ? (
-          createSingleColumnLayout()
-        ) : (
-          <SlideCarousel slides={slides} />
-        )}
+        <h3>Sample Questions</h3>
+        <SlideCarousel slides={slides} autoslideInterval={5000} />
       </div>
     </section>
   );

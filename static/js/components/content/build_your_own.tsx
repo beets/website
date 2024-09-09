@@ -20,20 +20,7 @@
 
 import React, { ReactElement } from "react";
 
-import { resolveHref } from "../../apps/base/utilities/utilities";
-import {
-  GA_EVENT_HOMEPAGE_CLICK,
-  GA_PARAM_ID,
-  GA_PARAM_URL,
-  triggerGAEvent,
-} from "../../shared/ga_events";
-
-interface BuildProps {
-  //the routes dictionary - this is used to convert routes to resolved urls
-  routes: Record<string, string>;
-}
-
-const Build = ({ routes }: BuildProps): ReactElement => {
+const Build = (): ReactElement => {
   return (
     <section id="build-your-own" className="build-your-own">
       <div className="container">
@@ -43,18 +30,7 @@ const Build = ({ routes }: BuildProps): ReactElement => {
             Deploying your own Data Commons lets you create a tailored platform
             showcasing relevant data and tools to engage your audience. Any
             entity or organization can build their own instance with specific
-            data, a dedicated website, and specialized tools.{" "}
-            <a
-              href={resolveHref("{static.build}", routes)}
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "build-your-own",
-                  [GA_PARAM_URL]: "{static.build}",
-                });
-              }}
-            >
-              Learn more
-            </a>
+            data, a dedicated website, and specialized tools.
           </p>
           <h4>United Nations Data Commons for the SDGs</h4>
         </div>
@@ -74,7 +50,7 @@ const Build = ({ routes }: BuildProps): ReactElement => {
             their Sustainable Development Goals data. With their deployed Data
             Commons, the UN created a centralized repository, allowing for
             dynamic storytelling and targeted analysis related to global
-            progress.
+            progress. Learn more
           </p>
         </div>
       </div>

@@ -22,23 +22,16 @@ import React, { ReactElement } from "react";
 
 import MediaText from "../../components/content/media_text";
 import Quote from "../../components/content/quote";
-import { Routes } from "../../shared/types/base";
-
-interface AppProps {
-  //the routes dictionary - this is used to convert routes to resolved urls
-  routes: Routes;
-}
 
 /**
  * Application container
  */
-
-export function App({ routes }: AppProps): ReactElement {
+export function App(): ReactElement {
   return (
     <>
       <section className="blue big">
         <Quote
-          quote="Every moment around the world people and organizations are generating data that can be extraordinarily useful and I think we have to find the way to harness that to solve problems.
+          quote="Every moment around the world people and organizations are generating data that can be extraordinary useful and I think we have to find the way to harness that to solve problems. 
 The challenge is that a lot of this data is very fragmented."
           byline="James Manyika, Senior  Vice President, Research, Technology & Society at Google"
         />
@@ -143,10 +136,7 @@ The challenge is that a lot of this data is very fragmented."
               Stay informed about the latest Data Commons developments: visit
               our blog or sign up for our mailing list
             </p>
-            <a
-              href="https://groups.google.com/g/datacommons-announce"
-              className="btn btn-primary"
-            >
+            <a href="#" className="btn btn-primary">
               Join the mailing list
             </a>
           </div>
@@ -154,18 +144,16 @@ The challenge is that a lot of this data is very fragmented."
             <h3>See Also</h3>
             <ul>
               <li>
-                <a href="https://docs.datacommons.org/datasets/">
-                  Data Sources
-                </a>
+                <a href="#">Data Sources</a>
               </li>
               <li>
-                <a href={routes["static.disclaimers"]}>Disclaimers</a>
+                <a href="#">Disclaimers</a>
               </li>
               <li>
-                <a href={routes["static.faq"]}>Frequently Asked Questions</a>
+                <a href="#">Frequently Asked Questions</a>
               </li>
               <li>
-                <a href="https://blog.datacommons.org/">Blog</a>
+                <a href="#">Blog</a>
               </li>
             </ul>
           </div>

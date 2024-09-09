@@ -21,12 +21,6 @@
 import React, { ReactElement } from "react";
 
 import { resolveHref } from "../../apps/base/utilities/utilities";
-import {
-  GA_EVENT_HOMEPAGE_CLICK,
-  GA_PARAM_ID,
-  GA_PARAM_URL,
-  triggerGAEvent,
-} from "../../shared/ga_events";
 
 interface ToolsProps {
   //the routes dictionary - this is used to convert routes to resolved urls
@@ -38,7 +32,7 @@ const Tools = ({ routes }: ToolsProps): ReactElement => {
     <section id="tools" className="tools">
       <div className="container">
         <div className="header">
-          <h3>Data Commons tools</h3>
+          <h3>Data Commons Tools</h3>
           <p>
             Data forms the foundation of science, policy, and journalism, but
             its full potential is often limited. Data Commons addresses this by
@@ -52,15 +46,9 @@ const Tools = ({ routes }: ToolsProps): ReactElement => {
             <a
               href={resolveHref("{tools.visualization}#visType=map", routes)}
               id="map-button"
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "tools",
-                  [GA_PARAM_URL]: "map",
-                });
-              }}
             >
               <span className="tool-icon map"></span>
-              Map Explorer
+              Map explorer
             </a>
           </li>
           <li>
@@ -70,15 +58,9 @@ const Tools = ({ routes }: ToolsProps): ReactElement => {
                 routes
               )}
               id="scatter-button"
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "tools",
-                  [GA_PARAM_URL]: "scatter",
-                });
-              }}
             >
               <span className="tool-icon scaterplot"></span>
-              Scatter Plot Explorer
+              Scatter plot tool
             </a>
           </li>
           <li>
@@ -88,45 +70,24 @@ const Tools = ({ routes }: ToolsProps): ReactElement => {
                 routes
               )}
               id="timeline-button"
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "tools",
-                  [GA_PARAM_URL]: "timeline",
-                });
-              }}
             >
               <span className="tool-icon timeline"></span>
-              Timelines Explorer
+              Timeline plot tool
             </a>
           </li>
           <li>
             <a
-              href={resolveHref("{tools.download}", routes)}
+              href={resolveHref("tools.download", routes)}
               id="download-button"
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "tools",
-                  [GA_PARAM_URL]: "download",
-                });
-              }}
             >
               <span className="tool-icon download"></span>
-              Data Download Tool
+              Place explorer
             </a>
           </li>
           <li>
-            <a
-              href="https://docs.datacommons.org/api/"
-              id="api-button"
-              onClick={(): void => {
-                triggerGAEvent(GA_EVENT_HOMEPAGE_CLICK, {
-                  [GA_PARAM_ID]: "tools",
-                  [GA_PARAM_URL]: "api",
-                });
-              }}
-            >
+            <a href={resolveHref("tools.api", routes)} id="api-button">
               <span className="tool-icon api"></span>
-              API Access
+              API access
             </a>
           </li>
         </ul>
