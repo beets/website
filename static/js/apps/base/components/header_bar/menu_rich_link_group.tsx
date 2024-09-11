@@ -26,39 +26,26 @@ interface MenuRichLinkGroupProps {
   links: HeaderMenuItemLink[];
   //the routes dictionary - this is used to convert routes to resolved urls
   routes: Routes;
-  //a flag to indicate whether the menu is open.
-  open: boolean;
 }
 
 const MenuRichLinkGroup = ({
   links,
   routes,
-  open,
 }: MenuRichLinkGroupProps): ReactElement => {
-  const tabIndex = open ? 0 : -1;
-
   return (
     <div className="item-links">
       {links.map((link, index) => (
         <div key={index} className="link-item">
           {link.linkType === "rss" ? (
             <>
-              <a
-                href={resolveHref(link.url, routes)}
-                className={"link"}
-                tabIndex={tabIndex}
-              >
+              <a href={resolveHref(link.url, routes)} className={"link"}>
                 <span className="material-icons-outlined">rss_feed</span>
                 <span className="link-title">RSS Feed</span>
               </a>
               {link.title && <p>• {link.title}</p>}
             </>
           ) : (
-            <a
-              href={resolveHref(link.url, routes)}
-              className={"link"}
-              tabIndex={tabIndex}
-            >
+            <a href={resolveHref(link.url, routes)} className={"link"}>
               {link.linkType === "external" && (
                 <span className="material-icons-outlined">arrow_outward</span>
               )}
