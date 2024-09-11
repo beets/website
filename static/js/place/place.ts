@@ -46,16 +46,18 @@ let yScrollLimit = 0;
 // Max top position for the sidebar, relative to #sidebar-outer.
 let sidebarTopMax = 0;
 // Only trigger fixed sidebar beyond this window width.
-const Y_SCROLL_WINDOW_BREAKPOINT = 992;
+const Y_SCROLL_WINDOW_BREAKPOINT = 1068;
 // Margin to apply to the fixed sidebar top.
 const Y_SCROLL_MARGIN = 100;
 
 window.addEventListener("load", (): void => {
   try {
     renderPage();
-    updatePageLayoutState();
-    maybeToggleFixedSidebar();
-    window.onresize = maybeToggleFixedSidebar;
+
+    // Drop sidebar pinning behavior.
+    // updatePageLayoutState();
+    // maybeToggleFixedSidebar();
+    // window.onresize = maybeToggleFixedSidebar;
   } catch (e) {
     return;
   }
@@ -65,7 +67,8 @@ window.addEventListener("load", (): void => {
  *  Make adjustments to sidebar scroll state based on the content.
  */
 function updatePageLayoutState(): void {
-  yScrollLimit = document.getElementById("place-summary").offsetTop;
+  // yScrollLimit = document.getElementById("place-summary").offsetTop;
+  yScrollLimit = document.getElementById("main-nav").offsetHeight;
   document.getElementById("sidebar-top-spacer").style.height =
     yScrollLimit + "px";
   const sidebarOuterHeight =
@@ -75,6 +78,7 @@ function updatePageLayoutState(): void {
   const footerHeight = document.getElementById("main-footer").offsetHeight;
   sidebarTopMax =
     sidebarOuterHeight - sidebarRegionHeight - Y_SCROLL_MARGIN - footerHeight;
+  console.log(sidebarTopMax);
 }
 
 /**
@@ -101,12 +105,14 @@ function adjustMenuPosition(): void {
     const calcTop = window.scrollY - yScrollLimit - Y_SCROLL_MARGIN;
     if (calcTop > sidebarTopMax) {
       topicsEl.style.top = sidebarTopMax + "px";
+      // topicsEl.style.top = yScrollLimit + "px";
       topicsEl.classList.remove("fixed");
       return;
     }
     topicsEl.classList.add("fixed");
     if (topicsEl.style.top != "0") {
-      topicsEl.style.top = "0";
+      // topicsEl.style.top = "0";
+      topicsEl.style.top = yScrollLimit + "px";
       topicsEl.scrollTop = 0;
     }
   } else {
@@ -234,7 +240,7 @@ function renderPage(): void {
       }
 
       // Readjust sidebar based on parent places.
-      updatePageLayoutState();
+      // updatePageLayoutState();
 
       // Display child places alphabetically
       for (const placeType in data.allChildPlaces) {
