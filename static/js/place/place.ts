@@ -55,6 +55,7 @@ window.addEventListener("load", (): void => {
     renderPage();
 
     // Drop sidebar pinning behavior.
+    // TODO(beets): Delete this old code.
     // updatePageLayoutState();
     // maybeToggleFixedSidebar();
     // window.onresize = maybeToggleFixedSidebar;
